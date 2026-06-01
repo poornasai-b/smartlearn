@@ -1,0 +1,27 @@
+# Java
+spring-api/target/
+spring-api/.mvn/
+spring-api/*.jar
+
+# Python
+python-ml/venv/
+python-ml/__pycache__/
+python-ml/chroma_db/
+python-ml/*.pyc
+
+# React
+frontend/node_modules/
+frontend/build/
+
+# Environment files - NEVER commit these
+.env
+spring-api/src/main/resources/application-prod.yml
+python-ml/.env
+
+# Uploads
+uploads/
+
+# IDE
+.vscode/
+.idea/
+*.iml

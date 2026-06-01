@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: smartlearn
+      POSTGRES_USER: smartlearn
+      POSTGRES_PASSWORD: smartlearn123
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  python-ml:
+    build: ./python-ml
+    ports:
+      - "8000:8000"
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - UPLOAD_DIR=/uploads
+      - CHROMA_DIR=/chroma_db
+    volumes:
+      - uploads:/uploads
+      - chroma_data:/chroma_db
+    depends_on:
+      - redis
+
+  spring-api:
+    build: ./spring-api
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=postgres
+      - DB_NAME=smartlearn
+      - DB_USER=smartlearn
+      - DB_PASS=smartlearn123
+      - REDIS_HOST=redis
+      - ML_SERVICE_URL=http://python-ml:8000
+      - UPLOAD_DIR=/uploads
+    volumes:
+      - uploads:/uploads
+    depends_on:
+      - postgres
+      - redis
+      - python-ml
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - spring-api
+
+volumes:
+  postgres_data:
+  chroma_data:
+  uploads:
